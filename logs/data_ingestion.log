@@ -1,0 +1,20 @@
+2025-07-27 01:31:41,897 - data_ingestion - DEBUG - Data loaded from file
+2025-07-27 01:31:41,967 - data_ingestion - DEBUG - Train and test data saved to ./data\raw
+2025-07-27 01:34:50,086 - data_ingestion - DEBUG - Data loaded from file
+2025-07-27 01:34:50,181 - data_ingestion - DEBUG - Train and test data saved to ./data\raw
+2025-07-27 01:53:19,985 - data_ingestion - DEBUG - Data loaded properly
+2025-07-27 01:55:27,629 - preprocessing - DEBUG - Data loaded properly
+2025-07-27 01:57:01,126 - preprocessing - DEBUG - Data loaded properly
+2025-07-27 01:59:59,778 - preprocessing - DEBUG - Data loaded properly
+2025-07-27 02:00:00,087 - preprocessing - DEBUG - Processed data saved to ./data\interim
+2025-07-27 15:40:07,841 - data_ingestion - DEBUG - Data loaded from file
+2025-07-27 15:40:07,857 - data_ingestion - ERROR - Failed to complete the data ingestion process: not enough values to unpack (expected 4, got 2)
+2025-07-27 15:42:46,979 - data_ingestion - DEBUG - Data loaded from file
+2025-07-27 15:42:47,112 - data_ingestion - DEBUG - Train and test data saved to ./data\raw
+2025-07-27 15:45:17,411 - preprocessing - ERROR - File not found: [Errno 2] No such file or directory: './data/raw/x_train.csv'
+2025-07-27 15:45:47,488 - data_ingestion - DEBUG - Data loaded from file
+2025-07-27 15:45:47,591 - data_ingestion - DEBUG - Train and test data saved to ./data\raw
+2025-07-27 15:46:03,364 - preprocessing - DEBUG - Data loaded properly
+2025-07-27 15:46:03,617 - preprocessing - DEBUG - Processed data saved to ./data\interim
+2025-07-27 16:39:15,021 - data_ingestion - DEBUG - Data loaded from file
+2025-07-27 16:39:15,068 - data_ingestion - DEBUG - Train and test data saved to ./data\raw

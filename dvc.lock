@@ -1,0 +1,56 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data_ingestion.py
+    deps:
+    - path: src/data_ingestion.py
+      hash: md5
+      md5: f939d39822395b7b374694b0ecdd0e62
+      size: 2552
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 91ab5ed86b911a14dc1097036721173e.dir
+      size: 489317
+      nfiles: 4
+  preprocessing:
+    cmd: python src/preprocessing.py
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 91ab5ed86b911a14dc1097036721173e.dir
+      size: 489317
+      nfiles: 4
+    - path: src/preprocessing.py
+      hash: md5
+      md5: 0efe276c9af80cdcd20cb7b884f197a9
+      size: 2474
+    outs:
+    - path: data/interim
+      hash: md5
+      md5: 68ef208d00d9e5858cb96e84b5b8242b.dir
+      size: 1696241
+      nfiles: 2
+  model:
+    cmd: python src/model.py
+    deps:
+    - path: data/interim
+      hash: md5
+      md5: 68ef208d00d9e5858cb96e84b5b8242b.dir
+      size: 1696241
+      nfiles: 2
+    - path: data/raw
+      hash: md5
+      md5: 91ab5ed86b911a14dc1097036721173e.dir
+      size: 489317
+      nfiles: 4
+    - path: src/model.py
+      hash: md5
+      md5: 2f8f98521eeb92c8ec4d47033e32f62a
+      size: 2788
+    outs:
+    - path: data/output
+      hash: md5
+      md5: 69e1b3aef5bf5b87b492946fd6fec209.dir
+      size: 6012
+      nfiles: 1
