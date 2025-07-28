@@ -61,7 +61,7 @@ def main():
         test_size = 0.2
         df=load_data()
         df.drop(columns=["RowNumber","Surname","CustomerId"],inplace=True)
-        x_train,x_test,y_train,y_test=train_test_split(df.drop(columns=["Exited"]),df["Exited"],test_size=0.2,random_state=2)
+        x_train,x_test,y_train,y_test=train_test_split(df.drop(columns=["Exited"]),df["Exited"],test_size=test_size,random_state=2)
         save_data(x_train,x_test,y_train,y_test, data_path='./data')
     except Exception as e:
         logger.error('Failed to complete the data ingestion process: %s', e)

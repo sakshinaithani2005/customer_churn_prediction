@@ -1,80 +1,126 @@
-# Customer Churn Prediction 🚀
+# Customer Churn Prediction
 
-A machine learning project to predict whether a customer will churn based on historical data. This end-to-end pipeline uses **Random Forest Classifier**, **hyperparameter tuning**, **DVC** for experiment tracking, and **logging** for debugging and monitoring.
+This project predicts customer churn using a machine learning pipeline. The pipeline is built using DVC and YAML configuration files. The model is trained using Random Forest Classifier and achieves 85% accuracy. The code includes logging for error tracking and hyperparameter tuning using GridSearchCV.
 
-## 📌 Project Highlights
+## Under Development
+ So all feautres are not implemented yet
 
-- 💡 **Model**: Random Forest Classifier  
-- 🛠️ **Pipeline**: Built using DVC & YAML  
-- 🔍 **Hyperparameter Tuning**: GridSearchCV  
-- 🧪 **Logging**: Implemented using Python `logging` module  
-- 📊 **Accuracy Achieved**: 85% on test data  
+ 
+## Project Highlights
+
+- Model: Random Forest Classifier  
+- Pipeline: Built using DVC and YAML  
+- Hyperparameter Tuning: Performed using GridSearchCV  
+- Logging: Implemented with Python's logging module  
+- Accuracy Achieved: 85% on test data  
+
+
+## 🚀 Features
+
+- 🔄 **Data Version Control (DVC)**: Track and version datasets and ML models.
+- 🧹 **Data Preprocessing**: Clean, transform, and split raw data.
+- 🧠 **ML Modeling**: Train and evaluate predictive models.
+- 📦 **Model Registry**: Store and version trained models.
+- 🧪 **Testing Suite**: Unit tests for pipeline components.
+- ⚙️ **CI/CD Integration**: GitHub Actions for linting, testing, and model training.
+- ☁️ **Cloud-ready**: Configurable for deployment on AWS, Azure, or GCP.
 
 ---
 
+## 🗂️ Project Structure
 
-## ⚙️ Tools & Technologies Used
+```
 
-- **Python**
-- **Scikit-learn**
-- **Pandas & NumPy**
-- **RandomForestClassifier**
-- **GridSearchCV** (for hyperparameter tuning)
-- **DVC** (for data and pipeline versioning)
-- **YAML** (for defining pipeline stages and parameters)
-- **Logging** (debug and error tracking)
+retainStack/
+│
+├── data/                      # Raw and processed datasets
+├── logger/
+|   ├── logger.py              # Logger module for log monitoring
+├── src/                       # Source code
+│   ├── data_ingestion.py     # Ingestion scripts
+│   ├── preprocessing.py  # Cleaning and splitting logic
+│   ├── model.py            # Model Evaluation
+│   
+│  
+├── dvc.yaml                   # DVC pipeline definition
+├── params.yaml                # Hyperparameters & config
+├── .github/workflows/         # CI/CD workflows
+├── requirements.txt
+├── README.md
+└── .gitignore
+
+````
 
 ---
 
-## 🚀 Getting Started
+## 📦 Setup Instructions
 
-1. Clone the repository
-git clone https://github.com/yourusername/churn-prediction-dvc.git
-cd churn-prediction-dvc
-2. Set up virtual environment
-bash
-Copy
-Edit
-python -m venv .venv
-source .venv/bin/activate   # for Unix
-.venv\Scripts\activate      # for Windows
-3. Install dependencies
-bash
-Copy
-Edit
-pip install -r requirements.txt
-4. Reproduce pipeline
-Make sure DVC is installed and then run:
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/sakshinaithani2005/customer_churn_prediction
+   cd RetainStack
+    ```
 
-bash
-Copy
-Edit
+2. **Create virtual environment**
+
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate   # Linux/Mac
+   .venv\Scripts\activate      # Windows
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set up DVC**
+
+   ```bash
+   dvc init
+   dvc pull
+   ```
+
+---
+
+## ⚙️ Running the Pipeline
+
+To run the full DVC pipeline:
+
+```bash
 dvc repro
-📈 Model Performance
-Training Accuracy: ~85%
+```
 
-Evaluation Metrics: Precision, Recall, ROC-AUC (available in evaluate.py)
+To run individual stages (e.g., data ingestion):
 
-Logging: All events/errors are logged in logs/ directory.
+```bash
+python src/data_ingestion.py
+```
 
-🧪 Key Features
-End-to-End Pipeline: From raw data preprocessing to model evaluation.
+---
 
-Reproducibility: Full reproducibility using DVC and versioned parameters.
+## 📁 Configuration
 
-Hyperparameter Optimization: Uses GridSearchCV to find the best Random Forest settings.
+All configuration (paths, split ratios, model parameters) is defined in:
 
-Modular Code: Easy to maintain and extend.
+* `params.yaml` for hyperparameters
+* `config.py` for directory structure
+* `dvc.yaml` for pipeline stages
 
-📌 Future Improvements
-Add more models (e.g., XGBoost, SVM) for comparison
-
-Implement model interpretability (e.g., SHAP or LIME)
-
-Deploy the model using FastAPI or Streamlit
-
-📝 License
-This project is open-source under the MIT License.
+---
 
 
+## 📌 Future Improvements
+
+* Streamlit or FastAPI serving
+* MLflow for model tracking
+* Full cloud deployment (SageMaker, Vertex AI)
+
+---
+
+## 👨‍💻 Author
+
+**Sakshi**
+---
 
