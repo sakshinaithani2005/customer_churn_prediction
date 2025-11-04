@@ -38,3 +38,17 @@ Accuracy: 0.8575
 weighted avg       0.85      0.86      0.84      2000
 
 2025-07-27 16:40:05,190 - model.py - DEBUG - Model ran and predictions saved successfully.
+2025-11-04 18:37:05,172 - model.py - DEBUG - Data loaded successfully.
+2025-11-04 18:37:42,195 - model.py - INFO - Best Parameters: {'max_depth': None, 'max_features': 'sqrt', 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200}
+2025-11-04 18:37:42,266 - model.py - INFO - Model Evaluation:
+Accuracy: 0.8575
+              precision    recall  f1-score   support
+
+           0       0.87      0.96      0.92      1617
+           1       0.72      0.41      0.53       383
+
+    accuracy                           0.86      2000
+   macro avg       0.80      0.69      0.72      2000
+weighted avg       0.85      0.86      0.84      2000
+
+2025-11-04 18:37:42,269 - model.py - DEBUG - Model ran and predictions saved successfully.
