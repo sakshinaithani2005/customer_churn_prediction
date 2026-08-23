@@ -38,23 +38,21 @@ stages:
   model:
     cmd: python src/model.py
     deps:
-    - path: data/interim/x_train_processed.csv
+    - path: data/interim
       hash: md5
-      md5: 569caaad859fe437f2c3c71e92d9e212
-      size: 707602
-    - path: data/raw/y_train.csv
+      md5: e94fd693d6970fa1dce51760af53c591.dir
+      size: 1106446
+      nfiles: 5
+    - path: data/raw
       hash: md5
-      md5: 93293efcd6c13b4cf0b97ab46744fde3
-      size: 12807
+      md5: c73d7d70b7069c8e3a797cefbf9748ae.dir
+      size: 469423
+      nfiles: 6
     - path: src/model.py
       hash: md5
       md5: cb2f6ed2a365d869bab317566d593bd8
       size: 4677
     outs:
-    - path: data/output/model_metadata.json
-      hash: md5
-      md5: b654850aaa23a3a907b3f8bd982c4bb6
-      size: 323
     - path: data/output/xgb_model.pkl
       hash: md5
       md5: e9ff3604240444e1c67e4efcf60d9b4e
@@ -62,26 +60,20 @@ stages:
   evaluation:
     cmd: python src/evaluate.py
     deps:
-    - path: data/interim/x_test_processed.csv
+    - path: data/interim
       hash: md5
-      md5: 7419e5a7090cadf2ce5ef841ea9428d5
-      size: 221258
-    - path: data/interim/x_val_processed.csv
-      hash: md5
-      md5: 360e95b2bceef06e8669ded80adc448d
-      size: 175696
+      md5: e94fd693d6970fa1dce51760af53c591.dir
+      size: 1106446
+      nfiles: 5
     - path: data/output/xgb_model.pkl
       hash: md5
       md5: e9ff3604240444e1c67e4efcf60d9b4e
       size: 239671
-    - path: data/raw/y_test.csv
+    - path: data/raw
       hash: md5
-      md5: e2743d4597d6f4a10d67362ddb20e067
-      size: 4007
-    - path: data/raw/y_val.csv
-      hash: md5
-      md5: 93200eeebfff1ecd32e3f379ecf24621
-      size: 3207
+      md5: c73d7d70b7069c8e3a797cefbf9748ae.dir
+      size: 469423
+      nfiles: 6
     - path: src/evaluate.py
       hash: md5
       md5: 3b738a045f5d4c0a83b9d081d8ab7617
@@ -110,10 +102,11 @@ stages:
   shap:
     cmd: python src/shap_explain.py
     deps:
-    - path: data/interim/x_test_processed.csv
+    - path: data/interim
       hash: md5
-      md5: 7419e5a7090cadf2ce5ef841ea9428d5
-      size: 221258
+      md5: e94fd693d6970fa1dce51760af53c591.dir
+      size: 1106446
+      nfiles: 5
     - path: data/output/xgb_model.pkl
       hash: md5
       md5: e9ff3604240444e1c67e4efcf60d9b4e
@@ -133,5 +126,5 @@ stages:
       size: 240192
     - path: reports/shap_summary.png
       hash: md5
-      md5: d195e45a736dcaa8c20cb37e023ceb0f
-      size: 338610
+      md5: 709c74a9a45259b191505ffbf0efd5dd
+      size: 337389

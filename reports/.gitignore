@@ -4,3 +4,6 @@
 /shap_summary.png
 /shap_feature_importance.csv
 /shap_feature_importance.png
+/threshold.txt
+/threshold_results.csv
+/shap_dependence_*.png
