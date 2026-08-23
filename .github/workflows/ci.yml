@@ -7,18 +7,13 @@ on:
   pull_request:
     branches: [main]
 
-
 jobs:
-
-  ml-pipeline:
-
+  ci-pipeline:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v4
-
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,104 +21,83 @@ jobs:
           python-version: "3.12"
           cache: "pip"
 
-
       - name: Install dependencies
         run: |
-
           python -m pip install --upgrade pip
-
           pip install -r requirements.txt
-
 
       - name: Install DVC
         run: |
-
           pip install dvc
-
 
       - name: Verify environment
         run: |
-
           python --version
-
           dvc --version
-
           python -c "import xgboost; print('XGBoost installed')"
-
           python -c "import shap; print('SHAP installed')"
-
 
       - name: Run DVC pipeline
         run: |
-
           dvc repro
-
 
       - name: Verify model
         run: |
-
           test -f data/output/xgb_model.pkl
-
           echo "XGBoost model generated successfully."
-
 
       - name: Verify evaluation
         run: |
-
           test -f reports/metrics.json
-
           test -f reports/predictions.csv
-
           test -f reports/threshold.txt
-
           test -f reports/confusion_matrix.png
-
           echo "Evaluation completed successfully."
-
 
       - name: Verify SHAP
         run: |
-
           test -f reports/shap_summary.png
-
           test -f reports/shap_feature_importance.csv
-
           test -f reports/shap_feature_importance.png
-
           echo "SHAP analysis completed successfully."
-
-
-      - name: Upload reports
-        uses: actions/upload-artifact@v4
-
-        with:
-          name: customer-churn-reports
-
-          path: reports/
-
-
-  docker:
-
-    runs-on: ubuntu-latest
-
-    needs: ml-pipeline
-
-    steps:
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
 
       - name: Build Docker image
         run: |
+          docker build -t customer-churn-api:latest .
 
-          docker build \
-            -t customer-churn:latest \
-            .
-
-
-      - name: Run Docker container
+      - name: Test Docker container
         run: |
+          # Start the container in background
+          docker run -d --name test-api -p 5000:5000 customer-churn-api:latest
+          
+          # Wait for Flask to start
+          sleep 5
+          
+          # Test the health check endpoint
+          curl --fail http://localhost:5000/
+          
+          # Test prediction endpoint
+          curl --fail -X POST http://localhost:5000/predict \
+            -H "Content-Type: application/json" \
+            -d '{
+                "CreditScore": 650,
+                "Geography": "Germany",
+                "Gender": "Female",
+                "Age": 45,
+                "Tenure": 5,
+                "Balance": 100000,
+                "NumOfProducts": 2,
+                "HasCrCard": 1,
+                "IsActiveMember": 1,
+                "EstimatedSalary": 60000
+            }'
+            
+          # Clean up
+          docker stop test-api
+          docker rm test-api
 
-          docker run --rm \
-            customer-churn:latest
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: customer-churn-reports
+          path: reports/
