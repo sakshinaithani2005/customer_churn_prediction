@@ -1,11 +1,14 @@
-Customer Churn Prediction — XGBoost + DVC + SHAP + Docker
+# Customer Churn Prediction — XGBoost + DVC + SHAP + Docker
 
-End-to-end customer churn prediction using XGBoost, DVC, SHAP, Flask, Docker, and GitHub Actions.
+An end-to-end customer churn prediction pipeline using XGBoost, DVC, SHAP, Flask, Docker, and GitHub Actions.
 
-The project trains an XGBoost model, evaluates it, explains it with SHAP, and serves the already-trained model through a Dockerized Flask API.
+This project trains an XGBoost classifier, evaluates its performance, explains feature importance and model decisions with SHAP, and serves the finalized model via a Dockerized Flask API.
 
-Architecture
+---
 
+## Architecture
+
+```
                          GitHub
                             |
                             v
@@ -18,74 +21,56 @@ Architecture
               |                           |
               v                           v
        Data Ingestion              Preprocessing
-              |                           |
-              +-------------+-------------+
-                            |
-                            v
-                         XGBoost
-                            |
-                            v
-                    xgb_model.pkl
-                            |
-              +-------------+-------------+
-              |                           |
-              v                           v
-         Evaluation                     SHAP
-              |                           |
-              v                           v
-       Metrics/Threshold          SHAP Reports
-              |                           |
-              +-------------+-------------+
-                            |
-                            v
-                    Deployment Artifacts
-              model + encoder + threshold
-                            |
-                            v
-                         Docker
-                            |
-                            v
-                       Flask API
-                            |
-                            v
-                      POST /predict
+            |                           |
+            +-------------+-------------+
+                          |
+                          v
+                       XGBoost
+                          |
+                          v
+                  xgb_model.pkl
+                          |
+            +-------------+-------------+
+            |                           |
+            v                           v
+       Evaluation                     SHAP
+            |                           |
+            v                           v
+     Metrics/Threshold          SHAP Reports
+            |                           |
+            +-------------+-------------+
+                          |
+                          v
+                  Deployment Artifacts
+               model + encoder + threshold
+                          |
+                          v
+                       Docker
+                          |
+                          v
+                      Flask API
+                          |
+                          v
+                    POST /predict
+```
 
-Tool responsibilities
+### Tool Responsibilities
 
-Tool
+| Tool | Purpose |
+| :--- | :--- |
+| **Git** | Version control |
+| **DVC** | ML pipeline reproducibility and tracking |
+| **XGBoost** | Churn prediction classification model |
+| **SHAP** | Model explainability and feature impact |
+| **Flask** | Serving predictions via REST API |
+| **Docker** | Packaging and running the trained model consistently |
+| **GitHub Actions** | CI/CD automation |
 
-Purpose
+---
 
-Git
+## Project Structure
 
-Version control
-
-DVC
-
-ML pipeline and reproducibility
-
-XGBoost
-
-Churn prediction
-
-SHAP
-
-Model explainability
-
-Flask
-
-Prediction API
-
-Docker
-
-Package and run the trained model
-
-GitHub Actions
-
-CI/CD automation
-
-Project Structure
-
+```text
 customer_churn_prediction/
 │
 ├── .github/workflows/
@@ -125,245 +110,209 @@ customer_churn_prediction/
 ├── requirements.txt
 ├── requirements-api.txt
 └── README.md
+```
 
-1. Start From Scratch
+---
 
-Clone
+## Setup and Installation
 
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+### 1. Clone the Repository
+```bash
+git clone https://github.com/sakshinaithani2005/customer_churn_prediction
 cd customer_churn_prediction
+```
 
-Create virtual environment
+### 2. Create Virtual Environment
 
-Linux / WSL:
-
+**Linux / WSL:**
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```
 
-Windows PowerShell:
-
+**Windows PowerShell:**
+```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
+```
 
-Verify:
-
-python --version
-
-Install dependencies
-
+### 3. Install Dependencies
+```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
+```
 
-Verify important packages:
-
+Verify the installation of core ML packages:
+```bash
 python -c "import pandas; print('pandas OK')"
 python -c "import sklearn; print('scikit-learn OK')"
 python -c "import xgboost; print('xgboost OK')"
 python -c "import shap; print('SHAP OK')"
+```
 
-2. DVC
+---
 
-If DVC has not already been initialized:
+## Data Version Control (DVC) Pipeline
 
+If DVC has not yet been initialized in your local workspace:
+```bash
 dvc init
+```
 
-Check:
-
+Verify DVC is working and inspect the pipeline layout:
+```bash
 dvc --version
 dvc status
 dvc dag
+```
 
-Run the complete pipeline
-
+### Run the Complete Pipeline
+```bash
 dvc repro
+```
 
-Pipeline:
+The pipeline stages execute in the following order:
+```text
+data_ingestion -> preprocessing -> XGBoost model -> evaluation -> SHAP
+```
 
-data_ingestion
-      ↓
-preprocessing
-      ↓
-XGBoost model
-      ↓
-evaluation
-      ↓
-SHAP
+DVC monitors dependencies (code, config, data files) and automatically skips stages whose inputs have not changed.
 
-DVC can skip stages whose dependencies have not changed.
+### Useful DVC Commands
+* Initialize: `dvc init`
+* Check status: `dvc status`
+* Inspect DAG: `dvc dag`
+* Run pipeline: `dvc repro`
+* Track a manual file: `dvc add <file-or-directory>`
+* Push/pull remote data: `dvc push` / `dvc pull`
 
-Useful DVC commands
+> [!NOTE]
+> `dvc push` and `dvc pull` require a configured remote storage location (e.g., S3, GCS, Azure Blob, or local directory).
 
-dvc init
-dvc status
-dvc dag
-dvc repro
-dvc add <file-or-directory>
-dvc push
-dvc pull
-dvc config --list
+---
 
-dvc push and dvc pull require a configured DVC remote.
+## Running Individual Scripts
 
-3. Run Individual Scripts
-
-For debugging:
-
+For debugging, you can run individual stages manually:
+```bash
 python src/data_ingestion.py
 python src/preprocessing.py
 python src/model.py
 python src/evaluate.py
 python src/shap_explain.py
+```
 
-For normal execution, prefer:
+For general work, always prefer `dvc repro` to ensure pipeline consistency.
 
-dvc repro
+---
 
-4. Model and Reports
+## Model and Reports
 
-The trained model is:
-
+The trained model is stored at:
+```text
 data/output/xgb_model.pkl
+```
 
-Other artifacts include:
+Other pipeline artifacts:
+* Model Metadata: `data/output/model_metadata.json`
+* Preprocessing Encoders: `data/interim/encoder.pkl`
+* Registered Features: `data/interim/feature_names.txt`
+* Performance metrics: `reports/metrics.json`
+* Test Predictions: `reports/predictions.csv`
+* Threshold Tuning Details: `reports/threshold.txt` & `reports/threshold_results.csv`
+* Visualizations: `reports/confusion_matrix.png`
 
-data/output/model_metadata.json
-data/interim/encoder.pkl
-data/interim/feature_names.txt
-reports/metrics.json
-reports/predictions.csv
-reports/threshold.txt
-reports/threshold_results.csv
-reports/confusion_matrix.png
+### Evaluation Metrics
+The model is evaluated using the following:
+* Accuracy
+* Precision
+* Recall
+* F1 Score
+* ROC-AUC
+* Confusion Matrix
 
-Evaluation uses:
+The classification threshold is dynamically tuned on validation data and saved in `reports/threshold.txt`.
 
-Accuracy
+---
 
-Precision
+## Model Explainability (SHAP)
 
-Recall
+SHAP is integrated to interpret model decisions and identify feature contributions.
 
-F1 Score
+### Generated Reports
+* `reports/shap_summary.png` (Overall summary beeswarm plot)
+* `reports/shap_feature_importance.png` (Global feature importance bar chart)
+* `reports/shap_feature_importance.csv` (Raw feature impact scores)
+* `reports/shap_dependence_*.png` (Individual feature dependence plots)
 
-ROC-AUC
+### Key Features Identified
+* Age
+* NumOfProducts
+* Gender_Male
+* Geography_Germany
+* ActiveAge (Derived feature)
+* IsActiveMember
+* ActiveTenure (Derived feature)
+* Balance
+* ZeroBalance (Derived feature)
+* BalancePerProduct (Derived feature)
 
-Confusion Matrix
+---
 
-The validation-selected classification threshold is stored in:
+## Containerization (Docker)
 
-reports/threshold.txt
+To separate training from serving:
+* **Training and Evaluation (DVC):** Handles ingestion, engineering, model training, SHAP, and metrics.
+* **Serving (Docker & Flask):** Packages the runtime, dependencies, trained model artifacts, and Flask API.
 
-5. SHAP
+The Docker container loads the pre-trained model and does not retrain.
 
-SHAP explains the XGBoost model.
-
-Outputs include:
-
-reports/shap_summary.png
-reports/shap_feature_importance.png
-reports/shap_feature_importance.csv
-reports/shap_dependence_*.png
-
-Important features observed in the project included:
-
-Age
-NumOfProducts
-Gender_Male
-Geography_Germany
-ActiveAge
-IsActiveMember
-ActiveTenure
-Balance
-ZeroBalance
-BalancePerProduct
-
-6. Docker
-
-The final architecture separates training from serving.
-
-DVC handles
-
-Training
-Evaluation
-SHAP
-Model artifacts
-
-Docker handles
-
-Runtime environment
-Trained XGBoost model
-Flask API
-Prediction serving
-
-The Docker container does not retrain the model.
-
-7. Docker Setup
-
-Check Docker:
-
-docker --version
-docker info
-
-The API uses:
-
-requirements-api.txt
-
-It contains only dependencies needed for model serving.
-
-8. Build Docker Image
-
-From the project root:
-
+### Build the Docker Image
+```bash
 docker build -t customer-churn-api:latest .
+```
 
-For a complete rebuild without cache:
-
+To perform a clean build ignoring cache:
+```bash
 docker build --no-cache -t customer-churn-api:latest .
+```
 
-Normally use the cached build:
-
-docker build -t customer-churn-api:latest .
-
-9. Check Docker Images
-
+Confirm the image is built successfully:
+```bash
 docker images
+```
 
-Expected image:
-
-customer-churn-api    latest
-
-10. Run Docker Container
-
+### Run the Container
+```bash
 docker run --rm -p 5000:5000 customer-churn-api:latest
+```
 
-The API runs at:
+The container starts a Flask server listening on port `5000` and automatically loads the model pipelines:
+* `xgb_model.pkl`
+* `encoder.pkl`
+* `feature_names.txt`
+* `threshold.txt`
 
-http://localhost:5000
+---
 
-The container loads:
+## API Documentation and Testing
 
-xgb_model.pkl
-encoder.pkl
-feature_names.txt
-threshold.txt
-
-11. Test Flask API
-
-Health check:
-
+### 1. Health Check
+```bash
 curl http://localhost:5000
-
-Expected response is similar to:
-
+```
+Expected response:
+```json
 {
   "message": "Customer Churn Prediction API",
   "model": "XGBoost",
   "status": "running",
   "threshold": 0.45
 }
+```
 
-Prediction request
-
+### 2. Predict Customer Churn
+```bash
 curl -X POST http://localhost:5000/predict \
 -H "Content-Type: application/json" \
 -d '{
@@ -378,228 +327,88 @@ curl -X POST http://localhost:5000/predict \
     "IsActiveMember": 1,
     "EstimatedSalary": 60000
 }'
+```
 
-Example:
-
+Expected response:
+```json
 {
   "churn": "No",
   "churn_probability": 0.4169,
   "prediction": 0,
   "threshold": 0.45
 }
+```
 
-Interpretation:
+#### Threshold Logic
+```text
+If churn_probability < threshold (e.g. 0.4169 < 0.45):
+    prediction = 0 (churn = No)
+Else:
+    prediction = 1 (churn = Yes)
+```
 
-0.4169 < 0.45
-       ↓
-prediction = 0
-       ↓
-churn = No
+---
 
-12. Useful Docker Commands
+## Reference Guides
 
-List running containers:
+### Docker CLI Cheat Sheet
+* List running containers: `docker ps`
+* List all containers: `docker ps -a`
+* View logs: `docker logs <container_id>`
+* Stop container: `docker stop <container_id>`
+* Remove container: `docker rm <container_id>`
+* Remove image: `docker rmi customer-churn-api:latest`
+* Run interactive shell: `docker run -it customer-churn-api:latest bash`
 
-docker ps
+---
 
-List all containers:
+## Continuous Integration (CI)
 
-docker ps -a
+A GitHub Actions workflow is defined in `.github/workflows/ci.yml`.
 
-View logs:
+### Workflow Steps
+1. Push/Pull Request triggers the run.
+2. Sets up Python and installs project dependencies.
+3. Runs the DVC pipeline to verify reproducibility.
+4. Asserts that model artifacts are created successfully.
+5. Builds the Docker image.
+6. Starts the container and tests the API response.
 
-docker logs <container_id>
-
-Stop:
-
-docker stop <container_id>
-
-Remove:
-
-docker rm <container_id>
-
-Remove image:
-
-docker rmi customer-churn-api:latest
-
-Open a shell inside the image:
-
-docker run -it customer-churn-api:latest bash
-
-13. GitHub Actions / CI
-
-The CI workflow is under:
-
-.github/workflows/
-
-General flow:
-
-Git Push / Pull Request
-          ↓
-    GitHub Actions
-          ↓
- Install dependencies
-          ↓
-     DVC pipeline
-          ↓
- Verify artifacts
-          ↓
-    Build Docker
-          ↓
-    Run container
-
-Useful Git commands:
-
-git status
-git add .
-git commit -m "Update customer churn pipeline"
-git push origin main
-
-After changing DVC pipeline files:
-
+### Git Integration
+To commit updates to the DVC pipeline and push them:
+```bash
 git add dvc.yaml dvc.lock
-git commit -m "Update DVC pipeline"
+git commit -m "Update DVC pipeline tracking"
 git push
+```
 
-14. Typical Daily Workflow
+---
 
-cd customer_churn_prediction
+## Typical Daily Development Workflow
 
-source .venv/bin/activate
-
-git pull
-
-dvc status
-
-dvc repro
-
-Then build and run the API:
-
-docker build -t customer-churn-api:latest .
-docker run --rm -p 5000:5000 customer-churn-api:latest
-
-Test:
-
-curl http://localhost:5000
-
-Then test /predict.
-
-Finally:
-
-git status
-git add .
-git commit -m "Update customer churn model"
-git push origin main
-
-15. Complete Project Flow
-
-              Churn_Modelling.csv
-                       |
-                       v
-              data_ingestion.py
-                       |
-                       v
-                Train/Val/Test
-                       |
-                       v
-               preprocessing.py
-                       |
-              Feature Engineering
-                       +
-                One-Hot Encoding
-                       |
-                       v
-                    XGBoost
-                       |
-                       v
-                xgb_model.pkl
-                       |
-             +---------+---------+
-             |                   |
-             v                   v
-        evaluate.py       shap_explain.py
-             |                   |
-             v                   v
-      Metrics/Threshold      SHAP Reports
-             |
-             v
-      Deployment Artifacts
-             |
-             v
-           Docker
-             |
-             v
-        Flask API
-             |
-             v
-        POST /predict
-             |
-             v
-      Churn Probability
-             |
-             v
-        Final Prediction
-
-Quick Cheat Sheet
-
-Environment
-
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-
-DVC
-
-dvc init
-dvc status
-dvc dag
-dvc repro
-dvc add <file-or-directory>
-dvc push
-dvc pull
-
-Training
-
-python src/data_ingestion.py
-python src/preprocessing.py
-python src/model.py
-python src/evaluate.py
-python src/shap_explain.py
-
-Docker
-
-docker build -t customer-churn-api:latest .
-docker images
-docker run --rm -p 5000:5000 customer-churn-api:latest
-docker ps
-docker ps -a
-docker logs <container_id>
-docker stop <container_id>
-docker rm <container_id>
-docker rmi customer-churn-api:latest
-
-API
-
-curl http://localhost:5000
-
-curl -X POST http://localhost:5000/predict \
--H "Content-Type: application/json" \
--d '{
-    "CreditScore": 650,
-    "Geography": "Germany",
-    "Gender": "Female",
-    "Age": 45,
-    "Tenure": 5,
-    "Balance": 100000,
-    "NumOfProducts": 2,
-    "HasCrCard": 1,
-    "IsActiveMember": 1,
-    "EstimatedSalary": 60000
-}'
-
-Project Summary
-
-Data → Feature Engineering → XGBoost → Evaluation → SHAP → DVC → Docker → Flask API → CI/CD
-
-DVC manages the reproducible ML pipeline. Docker packages the trained model and its serving environment. Flask exposes the trained XGBoost model through /predict.
+1. Navigate to the project directory:
+   ```bash
+   cd customer_churn_prediction
+   source .venv/bin/activate
+   ```
+2. Pull latest changes:
+   ```bash
+   git pull
+   ```
+3. Check status and run pipeline:
+   ```bash
+   dvc status
+   dvc repro
+   ```
+4. Build and test container locally:
+   ```bash
+   docker build -t customer-churn-api:latest .
+   docker run --rm -p 5000:5000 customer-churn-api:latest
+   ```
+5. Test API endpoints using `curl` or Postman.
+6. Commit and push:
+   ```bash
+   git add .
+   git commit -m "Update customer churn model pipeline"
+   git push origin main
+   ```
