@@ -9,52 +9,56 @@ stages:
       size: 674857
     - path: src/data_ingestion.py
       hash: md5
-      md5: f48867055ea2fe89e5e0f311f28e914a
-      size: 5898
+      md5: aa2758006c3bce2ee8c4714465da625b
+      size: 4870
     outs:
     - path: data/raw
       hash: md5
-      md5: ec6742fa34cf042fe8df8575eb1b64d1.dir
-      size: 469313
-      nfiles: 4
+      md5: c73d7d70b7069c8e3a797cefbf9748ae.dir
+      size: 469423
+      nfiles: 6
   preprocessing:
     cmd: python src/preprocessing.py
     deps:
     - path: data/raw
       hash: md5
-      md5: ec6742fa34cf042fe8df8575eb1b64d1.dir
-      size: 469313
-      nfiles: 4
+      md5: c73d7d70b7069c8e3a797cefbf9748ae.dir
+      size: 469423
+      nfiles: 6
     - path: src/preprocessing.py
       hash: md5
-      md5: 4d9344e0be4eced4b336c1735960e5a4
-      size: 10957
+      md5: d8e35c4b485a9867baca525ef8bb7348
+      size: 7746
     outs:
     - path: data/interim
       hash: md5
-      md5: c55689d7e3c46044211f4e61e298ede3.dir
-      size: 1106174
-      nfiles: 4
+      md5: e94fd693d6970fa1dce51760af53c591.dir
+      size: 1106446
+      nfiles: 5
   model:
     cmd: python src/model.py
     deps:
     - path: data/interim/x_train_processed.csv
       hash: md5
-      md5: 592d3c9b5727b2297cae3879a379667a
-      size: 883026
+      md5: 569caaad859fe437f2c3c71e92d9e212
+      size: 707602
     - path: data/raw/y_train.csv
       hash: md5
-      md5: bffa7f567ad5801b4feb476ed53519ea
-      size: 16007
+      md5: 93293efcd6c13b4cf0b97ab46744fde3
+      size: 12807
     - path: src/model.py
       hash: md5
-      md5: 7cb4fcf5a15bf5457d719f9ef5fbba06
-      size: 4470
+      md5: cb2f6ed2a365d869bab317566d593bd8
+      size: 4677
     outs:
+    - path: data/output/model_metadata.json
+      hash: md5
+      md5: b654850aaa23a3a907b3f8bd982c4bb6
+      size: 323
     - path: data/output/xgb_model.pkl
       hash: md5
-      md5: de06aec15b3868ff9c671fb819b6e57e
-      size: 1136837
+      md5: e9ff3604240444e1c67e4efcf60d9b4e
+      size: 239671
   evaluation:
     cmd: python src/evaluate.py
     deps:
@@ -62,28 +66,72 @@ stages:
       hash: md5
       md5: 7419e5a7090cadf2ce5ef841ea9428d5
       size: 221258
+    - path: data/interim/x_val_processed.csv
+      hash: md5
+      md5: 360e95b2bceef06e8669ded80adc448d
+      size: 175696
     - path: data/output/xgb_model.pkl
       hash: md5
-      md5: de06aec15b3868ff9c671fb819b6e57e
-      size: 1136837
+      md5: e9ff3604240444e1c67e4efcf60d9b4e
+      size: 239671
     - path: data/raw/y_test.csv
       hash: md5
       md5: e2743d4597d6f4a10d67362ddb20e067
       size: 4007
+    - path: data/raw/y_val.csv
+      hash: md5
+      md5: 93200eeebfff1ecd32e3f379ecf24621
+      size: 3207
     - path: src/evaluate.py
       hash: md5
-      md5: 413ff65b6f7b65457886fe81de53678a
-      size: 7380
+      md5: 3b738a045f5d4c0a83b9d081d8ab7617
+      size: 15187
     outs:
     - path: reports/confusion_matrix.png
       hash: md5
-      md5: f260f364a883c23436d1a0cd0851b1d3
-      size: 83843
+      md5: 062cbba659a1c22ba7428f528306bcbb
+      size: 83924
     - path: reports/metrics.json
       hash: md5
-      md5: 51f9f1fd0241562feadcfb80ca6444f6
-      size: 1145
+      md5: 02287a17ebc2fb671a1390dc7f86168f
+      size: 205
     - path: reports/predictions.csv
       hash: md5
-      md5: 3751dbbdb81e8842f9cbfb4cfd387a3f
-      size: 8018
+      md5: 7c5b324b043a996be0717aefc2d5c8fc
+      size: 29864
+    - path: reports/threshold.txt
+      hash: md5
+      md5: 556b410987cf61716e571a5e979c3849
+      size: 19
+    - path: reports/threshold_results.csv
+      hash: md5
+      md5: a11ec864fee96c1baf58988407a14251
+      size: 4307
+  shap:
+    cmd: python src/shap_explain.py
+    deps:
+    - path: data/interim/x_test_processed.csv
+      hash: md5
+      md5: 7419e5a7090cadf2ce5ef841ea9428d5
+      size: 221258
+    - path: data/output/xgb_model.pkl
+      hash: md5
+      md5: e9ff3604240444e1c67e4efcf60d9b4e
+      size: 239671
+    - path: src/shap_explain.py
+      hash: md5
+      md5: e82fca44afc34b82d747c4868dc6a462
+      size: 8034
+    outs:
+    - path: reports/shap_feature_importance.csv
+      hash: md5
+      md5: 16c60950612c0e587ed6ba5b8a06288f
+      size: 518
+    - path: reports/shap_feature_importance.png
+      hash: md5
+      md5: 669342781d95ae237b6417c23712cfbb
+      size: 240192
+    - path: reports/shap_summary.png
+      hash: md5
+      md5: d195e45a736dcaa8c20cb37e023ceb0f
+      size: 338610

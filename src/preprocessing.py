@@ -1,21 +1,52 @@
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-import numpy as np
 import pandas as pd
+import numpy as np
 import logging
 import os
+import joblib
 
-# --- Logging Setup ---
-log_dir = 'logs'
-os.makedirs(log_dir, exist_ok=True)
+from sklearn.preprocessing import OneHotEncoder
 
-logger = logging.getLogger('preprocessing')
+
+# ============================================================
+# Configuration
+# ============================================================
+
+RAW_DIR = "data/raw"
+INTERIM_DIR = "data/interim"
+LOG_DIR = "logs"
+
+CATEGORICAL_COLUMNS = [
+    "Geography",
+    "Gender"
+]
+
+
+# ============================================================
+# Logging
+# ============================================================
+
+os.makedirs(LOG_DIR, exist_ok=True)
+
+logger = logging.getLogger("preprocessing")
 logger.setLevel(logging.DEBUG)
 
-# Prevent duplicate handlers
-if not logger.hasHandlers():
+if not logger.handlers:
+
     console_handler = logging.StreamHandler()
-    file_handler = logging.FileHandler(os.path.join(log_dir, 'preprocessing.log'))
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    console_handler.setLevel(logging.INFO)
+
+    file_handler = logging.FileHandler(
+        os.path.join(
+            LOG_DIR,
+            "preprocessing.log"
+        )
+    )
+    file_handler.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - "
+        "%(levelname)s - %(message)s"
+    )
 
     console_handler.setFormatter(formatter)
     file_handler.setFormatter(formatter)
@@ -23,46 +54,327 @@ if not logger.hasHandlers():
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
 
-# --- Preprocessing Function ---
-def preprocess(x_train, x_test):
-    # Step 1: One-Hot Encoding
-    ohe = OneHotEncoder(drop='first', handle_unknown='ignore', sparse_output=False)
-    x_train_cat = ohe.fit_transform(x_train[["Geography", "Gender"]])
-    x_test_cat = ohe.transform(x_test[["Geography", "Gender"]])
 
-    # Step 2: Standard Scaling
-    scaler = StandardScaler()
-    x_train_num = x_train.drop(columns=["Geography", "Gender"]).values
-    x_test_num = x_test.drop(columns=["Geography", "Gender"]).values
+# ============================================================
+# Feature Engineering
+# ============================================================
 
-    x_train_scaled = scaler.fit_transform(x_train_num)
-    x_test_scaled = scaler.transform(x_test_num)
+def create_features(df):
 
-    # Step 3: Combine Encoded + Scaled
-    x_train_processed = np.hstack((x_train_scaled, x_train_cat))
-    x_test_processed = np.hstack((x_test_scaled, x_test_cat))
+    df = df.copy()
 
-    # Save to data/interim
-    data_path = os.path.join("data", "interim")
-    os.makedirs(data_path, exist_ok=True)
+    # 1. Zero balance
+    df["ZeroBalance"] = (
+        df["Balance"] == 0
+    ).astype(int)
 
-    pd.DataFrame(x_train_processed).to_csv(os.path.join(data_path, "x_train_processed.csv"), index=False)
-    pd.DataFrame(x_test_processed).to_csv(os.path.join(data_path, "x_test_processed.csv"), index=False)
+    # 2. Balance / salary
+    df["BalanceSalaryRatio"] = (
+        df["Balance"] /
+        (df["EstimatedSalary"] + 1)
+    )
 
-    logger.debug('Processed data saved to %s', data_path)
+    # 3. Balance per product
+    df["BalancePerProduct"] = (
+        df["Balance"] /
+        (df["NumOfProducts"] + 1)
+    )
 
-# --- Main Function ---
-def main():
-    """Load raw data, preprocess, and save processed outputs."""
-    try:
-        x_train = pd.read_csv('./data/raw/x_train.csv')
-        x_test = pd.read_csv('./data/raw/x_test.csv')
-        logger.debug('Raw data loaded successfully.')
-        preprocess(x_train, x_test)
-    except FileNotFoundError as e:
-        logger.error('File not found: %s', e)
-    except Exception as e:
-        logger.error('Unexpected error: %s', e)
+    # 4. Salary per product
+    df["SalaryPerProduct"] = (
+        df["EstimatedSalary"] /
+        (df["NumOfProducts"] + 1)
+    )
 
-if __name__ == '__main__':
-    main()
+    # 5. Credit score × age
+    df["CreditAgeInteraction"] = (
+        df["CreditScore"] *
+        df["Age"]
+    )
+
+    # 6. Active × tenure
+    df["ActiveTenure"] = (
+        df["IsActiveMember"] *
+        df["Tenure"]
+    )
+
+    # 7. Active × age
+    df["ActiveAge"] = (
+        df["IsActiveMember"] *
+        df["Age"]
+    )
+
+    # 8. Products × active
+    df["ProductsActive"] = (
+        df["NumOfProducts"] *
+        df["IsActiveMember"]
+    )
+
+    # 9. Tenure / age
+    df["TenureAgeRatio"] = (
+        df["Tenure"] /
+        (df["Age"] + 1)
+    )
+
+    return df
+
+
+# ============================================================
+# Preprocessing
+# ============================================================
+
+def preprocess():
+
+    logger.info(
+        "Loading raw datasets..."
+    )
+
+    x_train = pd.read_csv(
+        os.path.join(
+            RAW_DIR,
+            "x_train.csv"
+        )
+    )
+
+    x_val = pd.read_csv(
+        os.path.join(
+            RAW_DIR,
+            "x_val.csv"
+        )
+    )
+
+    x_test = pd.read_csv(
+        os.path.join(
+            RAW_DIR,
+            "x_test.csv"
+        )
+    )
+
+    # --------------------------------------------------------
+    # Feature engineering
+    # --------------------------------------------------------
+
+    x_train = create_features(x_train)
+    x_val = create_features(x_val)
+    x_test = create_features(x_test)
+
+    logger.info(
+        "Feature engineering completed."
+    )
+
+    # --------------------------------------------------------
+    # Numerical columns
+    # --------------------------------------------------------
+
+    numerical_columns = [
+        col
+        for col in x_train.columns
+        if col not in CATEGORICAL_COLUMNS
+    ]
+
+    # --------------------------------------------------------
+    # Fit encoder ONLY on training data
+    # --------------------------------------------------------
+
+    ohe = OneHotEncoder(
+        drop="first",
+        handle_unknown="ignore",
+        sparse_output=False
+    )
+
+    train_cat = ohe.fit_transform(
+        x_train[CATEGORICAL_COLUMNS]
+    )
+
+    val_cat = ohe.transform(
+        x_val[CATEGORICAL_COLUMNS]
+    )
+
+    test_cat = ohe.transform(
+        x_test[CATEGORICAL_COLUMNS]
+    )
+
+    encoded_names = (
+        ohe.get_feature_names_out(
+            CATEGORICAL_COLUMNS
+        )
+    )
+
+    # --------------------------------------------------------
+    # Numerical data
+    # --------------------------------------------------------
+
+    train_num = x_train[
+        numerical_columns
+    ].reset_index(drop=True)
+
+    val_num = x_val[
+        numerical_columns
+    ].reset_index(drop=True)
+
+    test_num = x_test[
+        numerical_columns
+    ].reset_index(drop=True)
+
+    # --------------------------------------------------------
+    # Convert categorical arrays to DataFrames
+    # --------------------------------------------------------
+
+    train_cat = pd.DataFrame(
+        train_cat,
+        columns=encoded_names
+    )
+
+    val_cat = pd.DataFrame(
+        val_cat,
+        columns=encoded_names
+    )
+
+    test_cat = pd.DataFrame(
+        test_cat,
+        columns=encoded_names
+    )
+
+    # --------------------------------------------------------
+    # Combine
+    # --------------------------------------------------------
+
+    x_train_processed = pd.concat(
+        [
+            train_num,
+            train_cat
+        ],
+        axis=1
+    )
+
+    x_val_processed = pd.concat(
+        [
+            val_num,
+            val_cat
+        ],
+        axis=1
+    )
+
+    x_test_processed = pd.concat(
+        [
+            test_num,
+            test_cat
+        ],
+        axis=1
+    )
+
+    # --------------------------------------------------------
+    # Handle inf / NaN
+    # --------------------------------------------------------
+
+    x_train_processed.replace(
+        [np.inf, -np.inf],
+        np.nan,
+        inplace=True
+    )
+
+    x_val_processed.replace(
+        [np.inf, -np.inf],
+        np.nan,
+        inplace=True
+    )
+
+    x_test_processed.replace(
+        [np.inf, -np.inf],
+        np.nan,
+        inplace=True
+    )
+
+    train_medians = (
+        x_train_processed.median(
+            numeric_only=True
+        )
+    )
+
+    x_train_processed.fillna(
+        train_medians,
+        inplace=True
+    )
+
+    x_val_processed.fillna(
+        train_medians,
+        inplace=True
+    )
+
+    x_test_processed.fillna(
+        train_medians,
+        inplace=True
+    )
+
+    # --------------------------------------------------------
+    # Save
+    # --------------------------------------------------------
+
+    os.makedirs(
+        INTERIM_DIR,
+        exist_ok=True
+    )
+
+    x_train_processed.to_csv(
+        os.path.join(
+            INTERIM_DIR,
+            "x_train_processed.csv"
+        ),
+        index=False
+    )
+
+    x_val_processed.to_csv(
+        os.path.join(
+            INTERIM_DIR,
+            "x_val_processed.csv"
+        ),
+        index=False
+    )
+
+    x_test_processed.to_csv(
+        os.path.join(
+            INTERIM_DIR,
+            "x_test_processed.csv"
+        ),
+        index=False
+    )
+
+    # Save encoder
+    joblib.dump(
+        ohe,
+        os.path.join(
+            INTERIM_DIR,
+            "encoder.pkl"
+        )
+    )
+
+    # Save feature names
+    with open(
+        os.path.join(
+            INTERIM_DIR,
+            "feature_names.txt"
+        ),
+        "w"
+    ) as f:
+
+        for feature in x_train_processed.columns:
+            f.write(
+                feature + "\n"
+            )
+
+    logger.info(
+        "Preprocessing completed successfully."
+    )
+
+    logger.info(
+        "Final feature count: %d",
+        x_train_processed.shape[1]
+    )
+
+
+# ============================================================
+# Main
+# ============================================================
+
+if __name__ == "__main__":
+    preprocess()

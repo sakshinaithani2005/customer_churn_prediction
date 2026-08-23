@@ -1,25 +1,59 @@
 stages:
- data_ingestion:
-  cmd: python src/data_ingestion.py
-  deps:
-  - src/data_ingestion.py
-  outs:
-  - data/raw
- preprocessing:
-  cmd: python src/preprocessing.py
-  deps:
-  - src/preprocessing.py
-  - data/raw
-  outs: 
-  - data/interim
- model:
-  cmd: python src/model.py
-  deps:
-  - src/model.py
-  - data/interim
-  - data/raw
-  outs:
-  - data/output
 
+  data_ingestion:
+    cmd: python src/data_ingestion.py
+    deps:
+      - src/data_ingestion.py
+      - Churn_Modelling.csv
+    outs:
+      - data/raw
 
+  preprocessing:
+    cmd: python src/preprocessing.py
+    deps:
+      - src/preprocessing.py
+      - data/raw
+    outs:
+      - data/interim
 
+  model:
+    cmd: python src/model.py
+    deps:
+      - src/model.py
+      - data/interim/x_train_processed.csv
+      - data/raw/y_train.csv
+    outs:
+      - data/output/xgb_model.pkl
+      - data/output/model_metadata.json
+
+  evaluation:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - data/output/xgb_model.pkl
+      - data/interim/x_val_processed.csv
+      - data/interim/x_test_processed.csv
+      - data/raw/y_val.csv
+      - data/raw/y_test.csv
+    outs:
+      - reports/metrics.json
+      - reports/predictions.csv
+      - reports/threshold_results.csv
+      - reports/threshold.txt
+      - reports/confusion_matrix.png
+
+    shap:
+    cmd: python src/shap_explain.py
+    deps:
+      - src/shap_explain.py
+      - data/output/xgb_model.pkl
+      - data/interim/x_test_processed.csv
+    outs:
+      - reports/shap_summary.png
+      - reports/shap_feature_importance.csv
+      - reports/shap_feature_importance.png
+      - reports/shap_dependence_Age.png
+      - reports/shap_dependence_NumOfProducts.png
+      - reports/shap_dependence_Gender_Male.png
+      - reports/shap_dependence_Geography_Germany.png
+      - reports/shap_dependence_ActiveAge.png

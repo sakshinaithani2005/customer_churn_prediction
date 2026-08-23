@@ -1,54 +1,5 @@
-2025-07-27 16:12:55,848 - model.py - DEBUG - Data loaded successfully.
-2025-07-27 16:12:55,849 - model.py - ERROR - An unexpected error occurred: 'DataFrame' object has no attribute 'ravel'
-2025-07-27 16:13:33,406 - model.py - DEBUG - Data loaded successfully.
-2025-07-27 16:13:33,407 - model.py - ERROR - An unexpected error occurred: 'DataFrame' object has no attribute 'ravel'
-2025-07-27 16:13:47,243 - model.py - DEBUG - Data loaded successfully.
-2025-07-27 16:13:47,244 - model.py - ERROR - An unexpected error occurred: 'DataFrame' object has no attribute 'ravel'
-2025-07-27 16:14:49,157 - model.py - DEBUG - Data loaded successfully.
-2025-07-27 16:14:49,158 - model.py - ERROR - An unexpected error occurred: 'DataFrame' object has no attribute 'ravel'
-2025-07-27 16:15:25,731 - model.py - DEBUG - Data loaded successfully.
-2025-07-27 16:15:42,446 - model.py - ERROR - An unexpected error occurred: [Errno 22] Invalid argument
-2025-07-27 16:16:01,238 - model.py - DEBUG - Data loaded successfully.
-2025-07-27 16:16:22,912 - model.py - ERROR - An unexpected error occurred: [Errno 22] Invalid argument
-2025-07-27 16:17:57,189 - model.py - DEBUG - Data loaded successfully.
-2025-07-27 16:18:33,194 - model.py - INFO - Best Parameters: {'max_depth': None, 'max_features': 'sqrt', 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200}
-2025-07-27 16:18:33,264 - model.py - INFO - Model Evaluation:
-Accuracy: 0.8575
-              precision    recall  f1-score   support
-
-           0       0.87      0.96      0.92      1617
-           1       0.72      0.41      0.53       383
-
-    accuracy                           0.86      2000
-   macro avg       0.80      0.69      0.72      2000
-weighted avg       0.85      0.86      0.84      2000
-
-2025-07-27 16:18:33,268 - model.py - DEBUG - Model ran and predictions saved successfully.
-2025-07-27 16:39:20,753 - model.py - DEBUG - Data loaded successfully.
-2025-07-27 16:40:05,100 - model.py - INFO - Best Parameters: {'max_depth': None, 'max_features': 'sqrt', 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200}
-2025-07-27 16:40:05,183 - model.py - INFO - Model Evaluation:
-Accuracy: 0.8575
-              precision    recall  f1-score   support
-
-           0       0.87      0.96      0.92      1617
-           1       0.72      0.41      0.53       383
-
-    accuracy                           0.86      2000
-   macro avg       0.80      0.69      0.72      2000
-weighted avg       0.85      0.86      0.84      2000
-
-2025-07-27 16:40:05,190 - model.py - DEBUG - Model ran and predictions saved successfully.
-2025-11-04 18:37:05,172 - model.py - DEBUG - Data loaded successfully.
-2025-11-04 18:37:42,195 - model.py - INFO - Best Parameters: {'max_depth': None, 'max_features': 'sqrt', 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 200}
-2025-11-04 18:37:42,266 - model.py - INFO - Model Evaluation:
-Accuracy: 0.8575
-              precision    recall  f1-score   support
-
-           0       0.87      0.96      0.92      1617
-           1       0.72      0.41      0.53       383
-
-    accuracy                           0.86      2000
-   macro avg       0.80      0.69      0.72      2000
-weighted avg       0.85      0.86      0.84      2000
-
-2025-11-04 18:37:42,269 - model.py - DEBUG - Model ran and predictions saved successfully.
+2026-08-22 19:27:37,499 - model - INFO - Loading training data...
+2026-08-22 19:27:37,541 - model - INFO - Training shape: (6400, 20)
+2026-08-22 19:28:02,962 - model - INFO - Best parameters: {'subsample': 0.8, 'scale_pos_weight': 2, 'n_estimators': 200, 'min_child_weight': 1, 'max_depth': 3, 'learning_rate': 0.05, 'gamma': 0.1, 'colsample_bytree': 1.0}
+2026-08-22 19:28:02,962 - model - INFO - Best CV ROC-AUC: 0.8643
+2026-08-22 19:28:02,970 - model - INFO - XGBoost model saved successfully.

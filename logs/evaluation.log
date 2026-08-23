@@ -1,0 +1,43 @@
+2026-08-22 19:28:08,254 - evaluation - INFO - Loading trained XGBoost model...
+2026-08-22 19:28:08,373 - evaluation - INFO - Model loaded successfully.
+2026-08-22 19:28:08,395 - evaluation - INFO - Test data shape: (2000, 20)
+2026-08-22 19:28:08,396 - evaluation - INFO - Generating prediction probabilities...
+2026-08-22 19:28:08,474 - evaluation - INFO - Evaluation completed.
+2026-08-22 19:28:08,474 - evaluation - INFO - Accuracy: 0.8550
+2026-08-22 19:28:08,474 - evaluation - INFO - Precision: 0.6527
+2026-08-22 19:28:08,474 - evaluation - INFO - Recall: 0.6143
+2026-08-22 19:28:08,475 - evaluation - INFO - F1 Score: 0.6329
+2026-08-22 19:28:08,475 - evaluation - INFO - ROC-AUC: 0.8667
+2026-08-22 19:28:08,521 - evaluation - INFO - Confusion Matrix:
+[[1460  133]
+ [ 157  250]]
+2026-08-22 19:28:08,522 - evaluation - INFO - Metrics saved to reports/metrics.json
+2026-08-22 19:28:08,606 - evaluation - INFO - Predictions saved to reports/predictions.csv
+2026-08-22 19:28:09,650 - evaluation - INFO - Confusion matrix saved to reports/confusion_matrix.png
+2026-08-22 19:28:09,650 - evaluation - INFO - Evaluation pipeline completed successfully.
+2026-08-22 19:44:09,097 - evaluation - INFO - Loading trained XGBoost model...
+2026-08-22 19:44:09,170 - evaluation - INFO - XGBoost model loaded successfully.
+2026-08-22 19:44:09,170 - evaluation - INFO - Loading validation data...
+2026-08-22 19:44:09,179 - evaluation - INFO - Validation data shape: (1600, 20)
+2026-08-22 19:44:09,179 - evaluation - INFO - Validation target shape: (1600,)
+2026-08-22 19:44:09,179 - evaluation - INFO - Generating validation probabilities...
+2026-08-22 19:44:09,184 - evaluation - INFO - Validation probabilities generated.
+2026-08-22 19:44:09,184 - evaluation - INFO - Searching for the best classification threshold...
+2026-08-22 19:44:09,573 - evaluation - INFO - Best validation threshold: 0.45
+2026-08-22 19:44:09,573 - evaluation - INFO - Validation Precision: 0.6221
+2026-08-22 19:44:09,574 - evaluation - INFO - Validation Recall: 0.6564
+2026-08-22 19:44:09,574 - evaluation - INFO - Validation F1: 0.6388
+2026-08-22 19:44:09,576 - evaluation - INFO - Threshold results saved to reports/threshold_results.csv
+2026-08-22 19:44:09,576 - evaluation - INFO - Best threshold saved to reports/threshold.txt
+2026-08-22 19:44:09,576 - evaluation - INFO - Loading test data...
+2026-08-22 19:44:09,583 - evaluation - INFO - Test data shape: (2000, 20)
+2026-08-22 19:44:09,583 - evaluation - INFO - Test target shape: (2000,)
+2026-08-22 19:44:09,583 - evaluation - INFO - Generating test probabilities...
+2026-08-22 19:44:09,588 - evaluation - INFO - Evaluating final model on test data...
+2026-08-22 19:44:09,609 - evaluation - INFO - Metrics saved to reports/metrics.json
+2026-08-22 19:44:09,613 - evaluation - INFO - Predictions saved to reports/predictions.csv
+2026-08-22 19:44:09,614 - evaluation - INFO - Confusion Matrix:
+[[1424  169]
+ [ 137  270]]
+2026-08-22 19:44:10,154 - evaluation - INFO - Confusion matrix saved to reports/confusion_matrix.png
+2026-08-22 19:44:10,154 - evaluation - INFO - Evaluation pipeline completed successfully.

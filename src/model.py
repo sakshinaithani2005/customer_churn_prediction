@@ -1,88 +1,230 @@
 import pandas as pd
-import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score, classification_report
 import logging
 import os
+import json
+import joblib
 
-# --- Logging Setup ---
-log_dir = 'logs'
-os.makedirs(log_dir, exist_ok=True)
+from xgboost import XGBClassifier
+from sklearn.model_selection import RandomizedSearchCV
 
-logger = logging.getLogger('model.py')
+
+# ============================================================
+# Configuration
+# ============================================================
+
+INTERIM_DIR = "data/interim"
+RAW_DIR = "data/raw"
+OUTPUT_DIR = "data/output"
+LOG_DIR = "logs"
+
+RANDOM_STATE = 42
+
+
+# ============================================================
+# Logging
+# ============================================================
+
+os.makedirs(LOG_DIR, exist_ok=True)
+
+logger = logging.getLogger("model")
 logger.setLevel(logging.DEBUG)
 
-if not logger.hasHandlers():
+if not logger.handlers:
+
     console_handler = logging.StreamHandler()
-    file_handler = logging.FileHandler(os.path.join(log_dir, 'model.log'))
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    console_handler.setLevel(logging.INFO)
+
+    file_handler = logging.FileHandler(
+        os.path.join(
+            LOG_DIR,
+            "model.log"
+        )
+    )
+
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - "
+        "%(levelname)s - %(message)s"
+    )
+
     console_handler.setFormatter(formatter)
     file_handler.setFormatter(formatter)
+
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
 
-# --- Model Training ---
-def model(x_train, y_train, x_test):
-    rf = RandomForestClassifier(random_state=42)
 
-    param_grid = {
-        'n_estimators': [100, 200],
-        'max_depth': [None, 10, 20],
-        'min_samples_split': [2, 5],
-        'min_samples_leaf': [1, 2],
-        'max_features': ['sqrt', 'log2']
-    }
+# ============================================================
+# Main
+# ============================================================
 
-    grid_search = GridSearchCV(
-        estimator=rf,
-        param_grid=param_grid,
-        scoring='accuracy',
-        cv=5,
-        verbose=1,
-        n_jobs=-1
-    )
-
-    grid_search.fit(x_train, y_train)
-
-    best_rf = grid_search.best_estimator_
-    logger.info("Best Parameters: %s", grid_search.best_params_)
-
-    y_pred = best_rf.predict(x_test)
-    return y_pred
-
-# --- Evaluation ---
-def evaluate(y_test, y_pred):
-    acc = accuracy_score(y_test, y_pred)
-    report = classification_report(y_test, y_pred)
-    print("Test Accuracy:", acc)
-    print("Classification Report:\n", report)
-    logger.info("Model Evaluation:\nAccuracy: %.4f\n%s", acc, report)
-
-# --- Main ---
 def main():
+
     try:
-        x_train = pd.read_csv('./data/interim/x_train_processed.csv')
-        x_test = pd.read_csv('./data/interim/x_test_processed.csv')
-        y_train = pd.read_csv('./data/raw/y_train.csv').values.ravel()
-        y_test = pd.read_csv('./data/raw/y_test.csv').values.ravel()
 
-        logger.debug('Data loaded successfully.')
+        logger.info(
+            "Loading training data..."
+        )
 
-        y_pred = model(x_train, y_train, x_test)
+        x_train = pd.read_csv(
+            os.path.join(
+                INTERIM_DIR,
+                "x_train_processed.csv"
+            )
+        )
 
-        evaluate(y_test, y_pred)
+        y_train = pd.read_csv(
+            os.path.join(
+                RAW_DIR,
+                "y_train.csv"
+            )
+        ).values.ravel()
 
-        output_dir = "./data/output"
-        os.makedirs(output_dir, exist_ok=True)
-        pd.DataFrame(y_pred, columns=["Prediction"]).to_csv(os.path.join(output_dir, "y_pred.csv"), index=False)
+        logger.info(
+            "Training shape: %s",
+            x_train.shape
+        )
 
-        logger.debug('Model ran and predictions saved successfully.')
+        # ----------------------------------------------------
+        # XGBoost
+        # ----------------------------------------------------
 
-    except FileNotFoundError as e:
-        logger.error('File not found: %s', e)
+        xgb = XGBClassifier(
+            random_state=RANDOM_STATE,
+            eval_metric="logloss",
+            n_jobs=-1
+        )
+
+        param_distributions = {
+
+            "n_estimators": [
+                200,
+                300,
+                500
+            ],
+
+            "max_depth": [
+                3,
+                4,
+                5,
+                6
+            ],
+
+            "learning_rate": [
+                0.01,
+                0.03,
+                0.05,
+                0.1
+            ],
+
+            "subsample": [
+                0.8,
+                1.0
+            ],
+
+            "colsample_bytree": [
+                0.8,
+                1.0
+            ],
+
+            "min_child_weight": [
+                1,
+                3,
+                5
+            ],
+
+            "gamma": [
+                0,
+                0.1,
+                0.3
+            ],
+
+            "scale_pos_weight": [
+                1,
+                2,
+                3
+            ]
+        }
+
+        search = RandomizedSearchCV(
+            estimator=xgb,
+            param_distributions=param_distributions,
+            n_iter=40,
+            scoring="roc_auc",
+            cv=5,
+            random_state=RANDOM_STATE,
+            verbose=1,
+            n_jobs=-1
+        )
+
+        search.fit(
+            x_train,
+            y_train
+        )
+
+        best_model = search.best_estimator_
+
+        logger.info(
+            "Best parameters: %s",
+            search.best_params_
+        )
+
+        logger.info(
+            "Best CV ROC-AUC: %.4f",
+            search.best_score_
+        )
+
+        # ----------------------------------------------------
+        # Save model
+        # ----------------------------------------------------
+
+        os.makedirs(
+            OUTPUT_DIR,
+            exist_ok=True
+        )
+
+        joblib.dump(
+            best_model,
+            os.path.join(
+                OUTPUT_DIR,
+                "xgb_model.pkl"
+            )
+        )
+
+        metadata = {
+            "model": "XGBoost",
+            "best_params": search.best_params_,
+            "best_cv_roc_auc": float(
+                search.best_score_
+            )
+        }
+
+        with open(
+            os.path.join(
+                OUTPUT_DIR,
+                "model_metadata.json"
+            ),
+            "w"
+        ) as f:
+
+            json.dump(
+                metadata,
+                f,
+                indent=4
+            )
+
+        logger.info(
+            "XGBoost model saved successfully."
+        )
+
     except Exception as e:
-        logger.error('An unexpected error occurred: %s', e)
+
+        logger.exception(
+            "Model training failed: %s",
+            e
+        )
+
+        raise
+
 
 if __name__ == "__main__":
     main()

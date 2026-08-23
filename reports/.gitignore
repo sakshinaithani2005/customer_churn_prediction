@@ -1,3 +1,6 @@
 /metrics.json
 /predictions.csv
 /confusion_matrix.png
+/shap_summary.png
+/shap_feature_importance.csv
+/shap_feature_importance.png

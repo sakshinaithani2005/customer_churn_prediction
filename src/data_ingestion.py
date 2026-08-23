@@ -1,71 +1,258 @@
 import pandas as pd
-import numpy as np
 import logging
-import yaml
 import os
+
 from sklearn.model_selection import train_test_split
 
-# Ensure the "logs" directory exists
-log_dir = 'logs'
-os.makedirs(log_dir, exist_ok=True)
+
+# ============================================================
+# Configuration
+# ============================================================
+
+DATA_FILE = "Churn_Modelling.csv"
+
+DATA_DIR = "data"
+RAW_DIR = os.path.join(DATA_DIR, "raw")
+
+TEST_SIZE = 0.20
+VALIDATION_SIZE = 0.20
+
+RANDOM_STATE = 42
 
 
-# logging configuration
-logger = logging.getLogger('data_ingestion')
-logger.setLevel('DEBUG')
+# ============================================================
+# Logging
+# ============================================================
 
-console_handler = logging.StreamHandler()
-console_handler.setLevel('DEBUG')
+LOG_DIR = "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
 
-log_file_path = os.path.join(log_dir, 'data_ingestion.log')
-file_handler = logging.FileHandler(log_file_path)
-file_handler.setLevel('DEBUG')
+logger = logging.getLogger("data_ingestion")
+logger.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-console_handler.setFormatter(formatter)
-file_handler.setFormatter(formatter)
+if not logger.handlers:
 
-logger.addHandler(console_handler)
-logger.addHandler(file_handler)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+
+    file_handler = logging.FileHandler(
+        os.path.join(
+            LOG_DIR,
+            "data_ingestion.log"
+        )
+    )
+    file_handler.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - "
+        "%(levelname)s - %(message)s"
+    )
+
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+
+
+# ============================================================
+# Load Data
+# ============================================================
 
 def load_data():
-    """Load data from a CSV file."""
-    try:
-        df = pd.read_csv("Churn_Modelling.csv")
-        logger.debug('Data loaded from file')
-        return df
-    except pd.errors.ParserError as e:
-        logger.error('Failed to parse the CSV file: %s', e)
-        raise
-    except Exception as e:
-        logger.error('Unexpected error occurred while loading the data: %s', e)
-        raise
 
-def save_data(x_train: pd.DataFrame, x_test: pd.DataFrame, y_train: pd.DataFrame, y_test: pd.DataFrame,data_path: str) -> None:
-    """Save the train and test datasets."""
-    try:
-        raw_data_path = os.path.join(data_path, 'raw')
-        os.makedirs(raw_data_path, exist_ok=True)
-        x_train.to_csv(os.path.join(raw_data_path, "x_train.csv"), index=False)
-        x_test.to_csv(os.path.join(raw_data_path, "x_test.csv"), index=False)
-        y_train.to_csv(os.path.join(raw_data_path, "y_train.csv"), index=False)
-        y_test.to_csv(os.path.join(raw_data_path, "y_test.csv"), index=False)
-        logger.debug('Train and test data saved to %s', raw_data_path)
-    except Exception as e:
-        logger.error('Unexpected error occurred while saving the data: %s', e)
-        raise
+    logger.info(
+        "Loading dataset from %s",
+        DATA_FILE
+    )
 
+    df = pd.read_csv(DATA_FILE)
+
+    logger.info(
+        "Dataset shape: %s",
+        df.shape
+    )
+
+    return df
+
+
+# ============================================================
+# Clean Data
+# ============================================================
+
+def clean_data(df):
+
+    df = df.copy()
+
+    columns_to_drop = [
+        "RowNumber",
+        "CustomerId",
+        "Surname"
+    ]
+
+    df.drop(
+        columns=columns_to_drop,
+        inplace=True,
+        errors="ignore"
+    )
+
+    logger.info(
+        "Removed identifier columns"
+    )
+
+    return df
+
+
+# ============================================================
+# Save Data
+# ============================================================
+
+def save_data(
+    x_train,
+    x_val,
+    x_test,
+    y_train,
+    y_val,
+    y_test
+):
+
+    os.makedirs(
+        RAW_DIR,
+        exist_ok=True
+    )
+
+    x_train.to_csv(
+        os.path.join(
+            RAW_DIR,
+            "x_train.csv"
+        ),
+        index=False
+    )
+
+    x_val.to_csv(
+        os.path.join(
+            RAW_DIR,
+            "x_val.csv"
+        ),
+        index=False
+    )
+
+    x_test.to_csv(
+        os.path.join(
+            RAW_DIR,
+            "x_test.csv"
+        ),
+        index=False
+    )
+
+    y_train.to_csv(
+        os.path.join(
+            RAW_DIR,
+            "y_train.csv"
+        ),
+        index=False
+    )
+
+    y_val.to_csv(
+        os.path.join(
+            RAW_DIR,
+            "y_val.csv"
+        ),
+        index=False
+    )
+
+    y_test.to_csv(
+        os.path.join(
+            RAW_DIR,
+            "y_test.csv"
+        ),
+        index=False
+    )
+
+    logger.info(
+        "Train/validation/test datasets saved."
+    )
+
+
+# ============================================================
+# Main
+# ============================================================
 
 def main():
-    try:
-        test_size = 0.2
-        df=load_data()
-        df.drop(columns=["RowNumber","Surname","CustomerId"],inplace=True)
-        x_train,x_test,y_train,y_test=train_test_split(df.drop(columns=["Exited"]),df["Exited"],test_size=test_size,random_state=2)
-        save_data(x_train,x_test,y_train,y_test, data_path='./data')
-    except Exception as e:
-        logger.error('Failed to complete the data ingestion process: %s', e)
-        print(f"Error: {e}")
 
-if __name__ == '__main__':
+    try:
+
+        df = load_data()
+
+        df = clean_data(df)
+
+        X = df.drop(
+            columns=["Exited"]
+        )
+
+        y = df["Exited"]
+
+        # ----------------------------------------------------
+        # First: separate test set
+        # ----------------------------------------------------
+
+        X_temp, X_test, y_temp, y_test = train_test_split(
+            X,
+            y,
+            test_size=TEST_SIZE,
+            random_state=RANDOM_STATE,
+            stratify=y
+        )
+
+        # ----------------------------------------------------
+        # Second: separate validation set
+        # ----------------------------------------------------
+
+        X_train, X_val, y_train, y_val = train_test_split(
+            X_temp,
+            y_temp,
+            test_size=VALIDATION_SIZE,
+            random_state=RANDOM_STATE,
+            stratify=y_temp
+        )
+
+        logger.info(
+            "Train shape: %s",
+            X_train.shape
+        )
+
+        logger.info(
+            "Validation shape: %s",
+            X_val.shape
+        )
+
+        logger.info(
+            "Test shape: %s",
+            X_test.shape
+        )
+
+        save_data(
+            X_train,
+            X_val,
+            X_test,
+            y_train,
+            y_val,
+            y_test
+        )
+
+        logger.info(
+            "Data ingestion completed successfully."
+        )
+
+    except Exception as e:
+
+        logger.exception(
+            "Data ingestion failed: %s",
+            e
+        )
+
+        raise
+
+
+if __name__ == "__main__":
     main()

@@ -5,3 +5,7 @@ matplotlib
 seaborn
 dvc
 flask
+xgboost
+shap
+joblib
+flask
