@@ -96,6 +96,20 @@ jobs:
           docker stop test-api
           docker rm test-api
 
+      - name: Build and Test C Reverse Proxy
+        run: |
+          cd proxy
+          make clean
+          make
+          make test
+          make sanitize
+          make test
+
+      - name: Build C Proxy Docker image
+        run: |
+          cd proxy
+          docker build -f Dockerfile.proxy -t customer-churn-proxy:latest .
+
       - name: Upload reports
         uses: actions/upload-artifact@v4
         with:

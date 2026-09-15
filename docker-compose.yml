@@ -1,0 +1,36 @@
+services:
+  flask-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: churn-flask-api
+    expose:
+      - "5000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile.proxy
+    container_name: churn-inference-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      flask-api:
+        condition: service_healthy
+    environment:
+      - PROXY_PORT=8080
+      - BACKEND_HOST=flask-api
+      - BACKEND_PORT=5000
+      - PROXY_THREADS=16
+      - CACHE_CAPACITY=1000
+      - CACHE_TTL_SECONDS=300
+      - RATE_LIMIT_REQUESTS=100
+      - RATE_LIMIT_WINDOW_SECONDS=60
+    restart: unless-stopped

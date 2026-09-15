@@ -3,3 +3,8 @@
 2026-08-22 19:28:02,962 - model - INFO - Best parameters: {'subsample': 0.8, 'scale_pos_weight': 2, 'n_estimators': 200, 'min_child_weight': 1, 'max_depth': 3, 'learning_rate': 0.05, 'gamma': 0.1, 'colsample_bytree': 1.0}
 2026-08-22 19:28:02,962 - model - INFO - Best CV ROC-AUC: 0.8643
 2026-08-22 19:28:02,970 - model - INFO - XGBoost model saved successfully.
+2026-08-23 12:00:28,449 - model - INFO - Loading training data...
+2026-08-23 12:00:28,473 - model - INFO - Training shape: (6400, 20)
+2026-08-23 12:00:44,407 - model - INFO - Best parameters: {'subsample': 0.8, 'scale_pos_weight': 2, 'n_estimators': 200, 'min_child_weight': 1, 'max_depth': 3, 'learning_rate': 0.05, 'gamma': 0.1, 'colsample_bytree': 1.0}
+2026-08-23 12:00:44,408 - model - INFO - Best CV ROC-AUC: 0.8643
+2026-08-23 12:00:44,416 - model - INFO - XGBoost model saved successfully.

@@ -41,3 +41,81 @@
  [ 137  270]]
 2026-08-22 19:44:10,154 - evaluation - INFO - Confusion matrix saved to reports/confusion_matrix.png
 2026-08-22 19:44:10,154 - evaluation - INFO - Evaluation pipeline completed successfully.
+2026-08-23 12:00:47,278 - evaluation - INFO - Loading trained XGBoost model...
+2026-08-23 12:00:47,324 - evaluation - INFO - XGBoost model loaded successfully.
+2026-08-23 12:00:47,325 - evaluation - INFO - Loading validation data...
+2026-08-23 12:00:47,335 - evaluation - INFO - Validation data shape: (1600, 20)
+2026-08-23 12:00:47,335 - evaluation - INFO - Validation target shape: (1600,)
+2026-08-23 12:00:47,335 - evaluation - INFO - Generating validation probabilities...
+2026-08-23 12:00:47,366 - evaluation - INFO - Validation probabilities generated.
+2026-08-23 12:00:47,366 - evaluation - INFO - Searching for the best classification threshold...
+2026-08-23 12:00:47,749 - evaluation - INFO - Best validation threshold: 0.45
+2026-08-23 12:00:47,750 - evaluation - INFO - Validation Precision: 0.6221
+2026-08-23 12:00:47,750 - evaluation - INFO - Validation Recall: 0.6564
+2026-08-23 12:00:47,750 - evaluation - INFO - Validation F1: 0.6388
+2026-08-23 12:00:47,754 - evaluation - INFO - Threshold results saved to reports/threshold_results.csv
+2026-08-23 12:00:47,754 - evaluation - INFO - Best threshold saved to reports/threshold.txt
+2026-08-23 12:00:47,754 - evaluation - INFO - Loading test data...
+2026-08-23 12:00:47,760 - evaluation - INFO - Test data shape: (2000, 20)
+2026-08-23 12:00:47,761 - evaluation - INFO - Test target shape: (2000,)
+2026-08-23 12:00:47,761 - evaluation - INFO - Generating test probabilities...
+2026-08-23 12:00:47,765 - evaluation - INFO - Evaluating final model on test data...
+2026-08-23 12:00:47,788 - evaluation - INFO - Metrics saved to reports/metrics.json
+2026-08-23 12:00:47,793 - evaluation - INFO - Predictions saved to reports/predictions.csv
+2026-08-23 12:00:47,795 - evaluation - INFO - Confusion Matrix:
+[[1424  169]
+ [ 137  270]]
+2026-08-23 12:00:48,399 - evaluation - INFO - Confusion matrix saved to reports/confusion_matrix.png
+2026-08-23 12:00:48,399 - evaluation - INFO - Evaluation pipeline completed successfully.
+2026-08-23 12:01:16,716 - evaluation - INFO - Loading trained XGBoost model...
+2026-08-23 12:01:16,790 - evaluation - INFO - XGBoost model loaded successfully.
+2026-08-23 12:01:16,790 - evaluation - INFO - Loading validation data...
+2026-08-23 12:01:16,799 - evaluation - INFO - Validation data shape: (1600, 20)
+2026-08-23 12:01:16,800 - evaluation - INFO - Validation target shape: (1600,)
+2026-08-23 12:01:16,800 - evaluation - INFO - Generating validation probabilities...
+2026-08-23 12:01:16,837 - evaluation - INFO - Validation probabilities generated.
+2026-08-23 12:01:16,838 - evaluation - INFO - Searching for the best classification threshold...
+2026-08-23 12:01:17,212 - evaluation - INFO - Best validation threshold: 0.45
+2026-08-23 12:01:17,212 - evaluation - INFO - Validation Precision: 0.6221
+2026-08-23 12:01:17,212 - evaluation - INFO - Validation Recall: 0.6564
+2026-08-23 12:01:17,213 - evaluation - INFO - Validation F1: 0.6388
+2026-08-23 12:01:17,214 - evaluation - INFO - Threshold results saved to reports/threshold_results.csv
+2026-08-23 12:01:17,214 - evaluation - INFO - Best threshold saved to reports/threshold.txt
+2026-08-23 12:01:17,215 - evaluation - INFO - Loading test data...
+2026-08-23 12:01:17,220 - evaluation - INFO - Test data shape: (2000, 20)
+2026-08-23 12:01:17,220 - evaluation - INFO - Test target shape: (2000,)
+2026-08-23 12:01:17,220 - evaluation - INFO - Generating test probabilities...
+2026-08-23 12:01:17,225 - evaluation - INFO - Evaluating final model on test data...
+2026-08-23 12:01:17,249 - evaluation - INFO - Metrics saved to reports/metrics.json
+2026-08-23 12:01:17,257 - evaluation - INFO - Predictions saved to reports/predictions.csv
+2026-08-23 12:01:17,260 - evaluation - INFO - Confusion Matrix:
+[[1424  169]
+ [ 137  270]]
+2026-08-23 12:01:17,722 - evaluation - INFO - Confusion matrix saved to reports/confusion_matrix.png
+2026-08-23 12:01:17,722 - evaluation - INFO - Evaluation pipeline completed successfully.
+2026-08-23 12:02:33,155 - evaluation - INFO - Loading trained XGBoost model...
+2026-08-23 12:02:33,261 - evaluation - INFO - XGBoost model loaded successfully.
+2026-08-23 12:02:33,261 - evaluation - INFO - Loading validation data...
+2026-08-23 12:02:33,271 - evaluation - INFO - Validation data shape: (1600, 20)
+2026-08-23 12:02:33,271 - evaluation - INFO - Validation target shape: (1600,)
+2026-08-23 12:02:33,271 - evaluation - INFO - Generating validation probabilities...
+2026-08-23 12:02:33,289 - evaluation - INFO - Validation probabilities generated.
+2026-08-23 12:02:33,289 - evaluation - INFO - Searching for the best classification threshold...
+2026-08-23 12:02:33,616 - evaluation - INFO - Best validation threshold: 0.45
+2026-08-23 12:02:33,616 - evaluation - INFO - Validation Precision: 0.6221
+2026-08-23 12:02:33,616 - evaluation - INFO - Validation Recall: 0.6564
+2026-08-23 12:02:33,616 - evaluation - INFO - Validation F1: 0.6388
+2026-08-23 12:02:33,618 - evaluation - INFO - Threshold results saved to reports/threshold_results.csv
+2026-08-23 12:02:33,618 - evaluation - INFO - Best threshold saved to reports/threshold.txt
+2026-08-23 12:02:33,618 - evaluation - INFO - Loading test data...
+2026-08-23 12:02:33,625 - evaluation - INFO - Test data shape: (2000, 20)
+2026-08-23 12:02:33,626 - evaluation - INFO - Test target shape: (2000,)
+2026-08-23 12:02:33,626 - evaluation - INFO - Generating test probabilities...
+2026-08-23 12:02:33,630 - evaluation - INFO - Evaluating final model on test data...
+2026-08-23 12:02:33,656 - evaluation - INFO - Metrics saved to reports/metrics.json
+2026-08-23 12:02:33,660 - evaluation - INFO - Predictions saved to reports/predictions.csv
+2026-08-23 12:02:33,661 - evaluation - INFO - Confusion Matrix:
+[[1424  169]
+ [ 137  270]]
+2026-08-23 12:02:34,106 - evaluation - INFO - Confusion matrix saved to reports/confusion_matrix.png
+2026-08-23 12:02:34,106 - evaluation - INFO - Evaluation pipeline completed successfully.

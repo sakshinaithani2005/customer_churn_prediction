@@ -17,3 +17,5 @@ tests
 README.md
 dvc.yaml
 dvc.lock
+
+proxy
