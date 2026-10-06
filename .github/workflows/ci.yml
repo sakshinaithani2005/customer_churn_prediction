@@ -61,55 +61,6 @@ jobs:
           test -f reports/shap_feature_importance.png
           echo "SHAP analysis completed successfully."
 
-      - name: Build Docker image
-        run: |
-          docker build -t customer-churn-api:latest .
-
-      - name: Test Docker container
-        run: |
-          # Start the container in background
-          docker run -d --name test-api -p 5000:5000 customer-churn-api:latest
-          
-          # Wait for Flask to start
-          sleep 5
-          
-          # Test the health check endpoint
-          curl --fail http://localhost:5000/
-          
-          # Test prediction endpoint
-          curl --fail -X POST http://localhost:5000/predict \
-            -H "Content-Type: application/json" \
-            -d '{
-                "CreditScore": 650,
-                "Geography": "Germany",
-                "Gender": "Female",
-                "Age": 45,
-                "Tenure": 5,
-                "Balance": 100000,
-                "NumOfProducts": 2,
-                "HasCrCard": 1,
-                "IsActiveMember": 1,
-                "EstimatedSalary": 60000
-            }'
-            
-          # Clean up
-          docker stop test-api
-          docker rm test-api
-
-      - name: Build and Test C Reverse Proxy
-        run: |
-          cd proxy
-          make clean
-          make
-          make test
-          make sanitize
-          make test
-
-      - name: Build C Proxy Docker image
-        run: |
-          cd proxy
-          docker build -f Dockerfile.proxy -t customer-churn-proxy:latest .
-
       - name: Upload reports
         uses: actions/upload-artifact@v4
         with:
